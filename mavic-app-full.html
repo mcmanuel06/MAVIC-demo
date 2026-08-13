@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="MAVIC Stock Broker - Home, Login, Register, Markets, Wallet & Dashboard combined">
+<meta name="author" content="Stock Broker Team">
+<meta name="keywords" content="stock broker, trading, portfolio, stocks">
+<title>MAVIC - Stock Broker</title>
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Font Awesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+<!-- Chart.js (for price charts / sparklines / allocation) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<style>
+  :root {
+    --mavic-mint: #17c3a2;
+    --mavic-dark: #0f1b2d;
+    --mavic-navy: #16233a;
+    --mavic-red: #e5484d;
+    --mavic-gold: #e5a13c;
+    --mavic-blue: #3a8ee5;
+  }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f6f8fb;
+  }
+  h1, h2, h3, h4, h5, .navbar-brand { font-family: 'Poppins', sans-serif; }
+
+  /* ---------- Page visibility ---------- */
+  .page { display: none; }
+  .page.active { display: block; }
+  .dview { display: none; }
+  .dview.active { display: block; }
+
+  /* ---------- Home page ---------- */
+  .hero-section {
+    background: linear-gradient(135deg, var(--mavic-dark), var(--mavic-navy));
+    color: #fff;
+  }
+  .hero-image, .about-image {
+    font-size: 10rem;
+    text-align: center;
+    color: var(--mavic-mint);
+    opacity: 0.85;
+  }
+  .feature-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    height: 100%;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  }
+  .feature-card i {
+    font-size: 2rem;
+    color: var(--mavic-mint);
+    margin-bottom: .75rem;
+  }
+  .text-light-50 { color: rgba(255,255,255,.7); text-decoration: none; }
+  .text-light-50:hover { color: #fff; }
+
+  /* ---------- Auth pages ---------- */
+  .auth-section {
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, var(--mavic-dark), var(--mavic-navy));
+    padding: 3rem 0;
+  }
+  .auth-card {
+    max-width: 460px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+  }
+  .auth-card .subtitle { color: #6c7a89; margin-bottom: 1.25rem; }
+  .demo-note {
+    background: #eef9f6;
+    border: 1px solid #cdeee6;
+    color: #0f7a63;
+    font-size: .85rem;
+    padding: .65rem .9rem;
+    border-radius: 8px;
+    margin-bottom: 1.25rem;
+  }
+  .auth-error {
+    color: var(--mavic-red);
+    font-size: .875rem;
+    min-height: 1.2rem;
+    margin-bottom: .5rem;
+  }
+  .auth-success {
+    color: #1a9e6c;
+    font-size: .875rem;
+    min-height: 1.2rem;
+    margin-bottom: .5rem;
+  }
+  .btn-mint {
+    background: var(--mavic-mint);
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    padding: .6rem 1rem;
+    border-radius: 8px;
+  }
+  .btn-mint:hover { background: #14a98b; color: #fff; }
+  .btn-outline-mint {
+    border: 1px solid var(--mavic-mint);
+    color: var(--mavic-mint);
+    font-weight: 600;
+    border-radius: 8px;
+    background: #fff;
+  }
+  .btn-outline-mint:hover { background: var(--mavic-mint); color: #fff; }
+  .switch-link { text-align: center; margin-top: .9rem; font-size: .9rem; }
+  .switch-link a { color: var(--mavic-mint); text-decoration: none; }
+
+  /* ---------- Dashboard shell ---------- */
+  .dash-body { background: #f2f4f8; }
+  .dash-shell {
+    display: flex;
+    min-height: calc(100vh - 56px);
+  }
+  .dash-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    background: var(--mavic-dark);
+    color: #fff;
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+  }
+  .user-chip, .balance-chip {
+    background: rgba(255,255,255,.08);
+    border-radius: 8px;
+    padding: .6rem .8rem;
+    font-size: .9rem;
+    margin-bottom: .5rem;
+  }
+  .balance-chip { color: var(--mavic-mint); font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+  .kyc-badge { font-size: .65rem; background: rgba(23,195,162,.18); color: var(--mavic-mint); padding: .15rem .45rem; border-radius: 6px; font-weight: 600; }
+  .nav-divider { border-top: 1px solid rgba(255,255,255,.1); margin: .6rem 0; }
+  .nav-section-label { font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; color: #6b7a90; padding: .3rem .8rem; }
+  .dash-nav-link {
+    background: none;
+    border: none;
+    color: #cfd8e3;
+    text-align: left;
+    padding: .6rem .8rem;
+    border-radius: 8px;
+    font-size: .92rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    width: 100%;
+  }
+  .dash-nav-link i { width: 18px; text-align: center; }
+  .dash-nav-link:hover { background: rgba(255,255,255,.08); color: #fff; }
+  .dash-nav-link.active { background: var(--mavic-mint); color: #06231d; font-weight: 600; }
+  .dash-nav-link.logout { margin-top: auto; color: #f3a9ac; }
+  .dash-main {
+    flex: 1;
+    padding: 2rem;
+    min-width: 0;
+  }
+  .dash-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: .5rem;
+  }
+  .bell-btn {
+    position: relative;
+    background: #fff;
+    border: 1px solid #e4e8ef;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    color: var(--mavic-dark);
+  }
+  .bell-dot {
+    position: absolute;
+    top: 6px; right: 8px;
+    width: 8px; height: 8px;
+    background: var(--mavic-red);
+    border-radius: 50%;
+    display: none;
+  }
+  .notif-panel {
+    position: absolute;
+    right: 2rem;
+    top: 60px;
+    width: 320px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.15);
+    z-index: 50;
+    display: none;
+    max-height: 360px;
+    overflow-y: auto;
+  }
+  .notif-panel.show { display: block; }
+  .notif-item { padding: .75rem 1rem; border-bottom: 1px solid #f0f2f6; font-size: .85rem; }
+  .notif-item small { color: #8592a6; }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .stat-card, .panel-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+  .stat-card .label { color: #8592a6; font-size: .85rem; }
+  .stat-card .value { font-size: 1.6rem; font-weight: 700; margin-top: .25rem; }
+  .stat-card .sub { font-size: .8rem; margin-top: .15rem; }
+  .panel-card { margin-bottom: 1.5rem; }
+  .dash-table { width: 100%; border-collapse: collapse; margin-top: .75rem; }
+  .dash-table th, .dash-table td {
+    text-align: left;
+    padding: .6rem .5rem;
+    border-bottom: 1px solid #eef0f4;
+    font-size: .9rem;
+    vertical-align: middle;
+  }
+  .dash-table th { color: #8592a6; font-weight: 600; }
+  .gain-positive { color: #1a9e6c; }
+  .gain-negative { color: var(--mavic-red); }
+  .order-form label { font-size: .85rem; color: #6c7a89; margin-top: .6rem; display: block; }
+  .btn-buy {
+    background: var(--mavic-mint);
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 8px;
+    margin-top: 1.25rem;
+  }
+  .btn-sell-outline {
+    border: 1px solid var(--mavic-red);
+    color: var(--mavic-red);
+    background: #fff;
+  }
+
+  .status-pill { font-size: .72rem; font-weight: 600; padding: .2rem .55rem; border-radius: 20px; }
+  .status-open { background: #fdf2dd; color: #a4720d; }
+  .status-filled { background: #e6f7f1; color: #0f7a63; }
+  .status-cancelled { background: #f4f4f6; color: #8592a6; }
+  .status-success { background: #e6f7f1; color: #0f7a63; }
+
+  .stock-row { cursor: pointer; }
+  .stock-row:hover { background: #f9fbfd; }
+  .symbol-badge { font-weight: 700; }
+  .star-btn { background: none; border: none; color: #cbd3de; font-size: 1rem; }
+  .star-btn.active { color: var(--mavic-gold); }
+  .sparkline-cell canvas { width: 100px !important; height: 34px !important; }
+
+  .market-search { max-width: 320px; }
+  .sector-pill {
+    display: inline-block;
+    font-size: .72rem;
+    background: #eef1f6;
+    color: #56607a;
+    padding: .15rem .55rem;
+    border-radius: 20px;
+  }
+
+  .tf-btn {
+    border: 1px solid #e4e8ef;
+    background: #fff;
+    color: #56607a;
+    font-size: .8rem;
+    padding: .3rem .7rem;
+    border-radius: 6px;
+  }
+  .tf-btn.active { background: var(--mavic-dark); color: #fff; border-color: var(--mavic-dark); }
+  .price-chart-wrap { height: 260px; }
+  .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .75rem 1.5rem; }
+  .stat-grid .k { color: #8592a6; font-size: .82rem; }
+  .stat-grid .v { font-weight: 600; }
+
+  .method-option {
+    border: 1px solid #e4e8ef;
+    border-radius: 10px;
+    padding: .75rem 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+  }
+  .method-option.selected { border-color: var(--mavic-mint); background: #f2fbf9; }
+  .empty-state { text-align: center; padding: 2.5rem 1rem; color: #8592a6; }
+  .empty-state i { font-size: 2rem; margin-bottom: .5rem; display: block; }
+
+  @media (max-width: 900px) {
+    .dash-sidebar { display: none; }
+    .stat-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- HOME PAGE                                                     -->
+<!-- ============================================================ -->
+<div class="page active" id="page-home">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="#" onclick="showPage('home'); return false;">
+        <i class="fas fa-chart-line"></i> MAVIC
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link active" href="#" onclick="showPage('home'); return false;">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="showPage('login'); return false;">Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" onclick="showPage('register'); return false;">Register</a></li>
+          <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+          <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero-section">
+    <div class="container">
+      <div class="row align-items-center min-vh-100">
+        <div class="col-lg-6">
+          <h1 class="display-4 fw-bold mb-4">Welcome to MAVIC</h1>
+          <p class="lead mb-4">Professional trading platform for managing your stock portfolio. Buy, sell, and track your investments in real-time.</p>
+          <div class="d-flex gap-3">
+            <a href="#" class="btn btn-primary btn-lg" onclick="showPage('register'); return false;">Get Started</a>
+            <a href="#features" class="btn btn-outline-primary btn-lg">Learn More</a>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="hero-image"><i class="fas fa-chart-pie"></i></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="features-section py-5">
+    <div class="container">
+      <h2 class="text-center mb-5">Why Choose MAVIC? It is an easy money making way</h2>
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+          <div class="feature-card">
+            <i class="fas fa-lock"></i>
+            <h5>Secure Authentication</h5>
+            <p>JWT-based login keeps your account protected</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="feature-card">
+            <i class="fas fa-chart-line"></i>
+            <h5>Real-time Tracking</h5>
+            <p>Monitor your portfolio with live stock prices</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="feature-card">
+            <i class="fas fa-exchange-alt"></i>
+            <h5>Easy Trading</h5>
+            <p>Buy and sell stocks with market or limit orders</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="feature-card">
+            <i class="fas fa-history"></i>
+            <h5>Transaction History</h5>
+            <p>Complete record of all your trades and transactions</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="feature-card">
+            <i class="fas fa-wallet"></i>
+            <h5>Instant Funding</h5>
+            <p>Fund your wallet by card or bank transfer and withdraw anytime</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="feature-card">
+            <i class="fas fa-star"></i>
+            <h5>Watchlists</h5>
+            <p>Save stocks you're watching and jump back in fast</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="feature-card">
+            <i class="fas fa-sliders"></i>
+            <h5>Market &amp; Limit Orders</h5>
+            <p>Trade at the current price or set your own target price</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="feature-card">
+            <i class="fas fa-chart-pie"></i>
+            <h5>Portfolio Analytics</h5>
+            <p>See your allocation and gains broken down by holding</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="about-section py-5 bg-light">
+    <div class="container">
+      <h2 class="text-center mb-5">Globally Used</h2>
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <p>MAVIC is a modern stock broker simulator. Our platform provides a seamless experience for managing your investment portfolio.</p>
+          <p>Built with cutting-edge technology including Spring Boot, PostgreSQL, and JWT authentication, we ensure your investments are secure and your data is protected.</p>
+          <ul class="list-unstyled">
+            <li><i class="fas fa-check text-success"></i> Professional-grade trading platform</li>
+            <li><i class="fas fa-check text-success"></i> Real-time market data integration</li>
+            <li><i class="fas fa-check text-success"></i> Secure user authentication</li>
+            <li><i class="fas fa-check text-success"></i> Advanced portfolio analytics</li>
+          </ul>
+        </div>
+        <div class="col-lg-6">
+          <div class="about-image"><i class="fas fa-building"></i></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-dark text-light py-4">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <h5>MAVIC</h5>
+          <p>Professional trading platform for managing your investments</p>
+        </div>
+        <div class="col-md-4">
+          <h5>Quick Links</h5>
+          <ul class="list-unstyled">
+            <li><a href="#" class="text-light-50" onclick="showPage('home'); return false;">Home</a></li>
+            <li><a href="#" class="text-light-50" onclick="showPage('login'); return false;">Login</a></li>
+            <li><a href="#" class="text-light-50" onclick="showPage('register'); return false;">Register</a></li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h5>Contact</h5>
+          <p>Email: mcmanueliberuche199@gmail.com<br>Phone: +234 9030876628</p>
+        </div>
+      </div>
+      <hr>
+      <div class="text-center"><p>&copy; 2026 MAVIC Stock Broker. All rights reserved.</p></div>
+    </div>
+  </footer>
+</div>
+
+<!-- ============================================================ -->
+<!-- LOGIN PAGE                                                    -->
+<!-- ============================================================ -->
+<div class="page" id="page-login">
+  <section class="auth-section">
+    <div class="container">
+      <div class="auth-card">
+        <h2>Welcome back</h2>
+        <p class="subtitle">Log in to manage your portfolio</p>
+
+        <div class="demo-note">
+          <i class="fas fa-circle-info" aria-hidden="true"></i>
+          Demo mode: accounts are stored in this browser only, not on a real server.
+        </div>
+
+        <div class="auth-error" id="loginError"></div>
+
+        <form id="loginForm" novalidate>
+          <div class="mb-3">
+            <label for="loginEmail">Email address</label>
+            <input type="email" class="form-control" id="loginEmail" required>
+          </div>
+          <div class="mb-3">
+            <label for="loginPassword">Password</label>
+            <input type="password" class="form-control" id="loginPassword" required>
+          </div>
+          <button type="submit" class="btn btn-mint">Log In</button>
+        </form>
+
+        <div class="switch-link">
+          Don't have an account? <a href="#" onclick="showPage('register'); return false;">Create one</a>
+        </div>
+        <div class="switch-link">
+          <a href="#" onclick="showPage('home'); return false;"><i class="fas fa-arrow-left" aria-hidden="true"></i> Back to home</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ============================================================ -->
+<!-- REGISTER PAGE                                                 -->
+<!-- ============================================================ -->
+<div class="page" id="page-register">
+  <section class="auth-section">
+    <div class="container">
+      <div class="auth-card">
+        <h2>Create your account</h2>
+        <p class="subtitle">Start with $10,000 in simulated cash</p>
+
+        <div class="demo-note">
+          <i class="fas fa-circle-info" aria-hidden="true"></i>
+          Demo mode: accounts are stored in this browser only, not on a real server.
+        </div>
+
+        <div class="auth-error" id="registerError"></div>
+
+        <form id="registerForm" novalidate>
+          <div class="mb-3">
+            <label for="registerName">Full name</label>
+            <input type="text" class="form-control" id="registerName" required>
+          </div>
+          <div class="mb-3">
+            <label for="registerEmail">Email address</label>
+            <input type="email" class="form-control" id="registerEmail" required>
+          </div>
+          <div class="mb-3">
+            <label for="registerPassword">Password</label>
+            <input type="password" class="form-control" id="registerPassword" minlength="6" required>
+          </div>
+          <div class="mb-3">
+            <label for="registerConfirm">Confirm password</label>
+            <input type="password" class="form-control" id="registerConfirm" minlength="6" required>
+          </div>
+          <button type="submit" class="btn btn-mint">Create Account</button>
+        </form>
+
+        <div class="switch-link">
+          Already have an account? <a href="#" onclick="showPage('login'); return false;">Log in</a>
+        </div>
+        <div class="switch-link">
+          <a href="#" onclick="showPage('home'); return false;"><i class="fas fa-arrow-left" aria-hidden="true"></i> Back to home</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ============================================================ -->
+<!-- APP SHELL (Dashboard, Markets, Stock, Watchlist, Orders,      -->
+<!-- Wallet, Profile all live inside this one persistent shell)    -->
+<!-- ============================================================ -->
+<div class="page dash-body" id="page-app">
+  <nav class="navbar navbar-dark" style="background: var(--mavic-dark);">
+    <div class="container-fluid dash-topbar">
+      <a class="navbar-brand fw-bold" href="#" onclick="return false;">
+        <i class="fas fa-chart-line" aria-hidden="true"></i> MAVIC
+      </a>
+      <div class="d-flex align-items-center gap-2 position-relative">
+        <button class="bell-btn" onclick="toggleNotifPanel()" title="Notifications">
+          <i class="fas fa-bell"></i>
+          <span class="bell-dot" id="bellDot"></span>
+        </button>
+        <div class="notif-panel" id="notifPanel">
+          <div class="p-3 border-bottom fw-semibold">Notifications</div>
+          <div id="notifList"></div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dash-shell">
+    <aside class="dash-sidebar">
+      <div class="user-chip" id="userChip">—</div>
+      <div class="balance-chip">
+        <span id="balanceChip">$0.00</span>
+        <span class="kyc-badge" id="kycBadge">KYC</span>
+      </div>
+
+      <button class="dash-nav-link" data-view="overview" onclick="showDash('overview')">
+        <i class="fas fa-gauge" aria-hidden="true"></i> Overview
+      </button>
+      <button class="dash-nav-link" data-view="markets" onclick="showDash('markets')">
+        <i class="fas fa-chart-simple" aria-hidden="true"></i> Markets
+      </button>
+      <button class="dash-nav-link" data-view="watchlist" onclick="showDash('watchlist')">
+        <i class="fas fa-star" aria-hidden="true"></i> Watchlist
+      </button>
+      <button class="dash-nav-link" data-view="orders" onclick="showDash('orders')">
+        <i class="fas fa-list-check" aria-hidden="true"></i> Orders
+      </button>
+      <button class="dash-nav-link" data-view="wallet" onclick="showDash('wallet')">
+        <i class="fas fa-wallet" aria-hidden="true"></i> Wallet
+      </button>
+      <button class="dash-nav-link" data-view="profile" onclick="showDash('profile')">
+        <i class="fas fa-user" aria-hidden="true"></i> Profile
+      </button>
+
+      <div class="nav-divider"></div>
+      <a class="dash-nav-link" href="#" onclick="showPage('home'); return false;">
+        <i class="fas fa-house" aria-hidden="true"></i> Home
+      </a>
+      <button class="dash-nav-link logout" type="button" onclick="logout()">
+        <i class="fas fa-right-from-bracket" aria-hidden="true"></i> Log Out
+      </button>
+    </aside>
+
+    <main class="dash-main">
+
+      <!-- ============ OVERVIEW ============ -->
+      <div class="dview" id="view-overview">
+        <h1>Portfolio Overview</h1>
+
+        <div class="stat-row">
+          <div class="stat-card">
+            <div class="label">Cash Balance</div>
+            <div class="value" id="statCash">$0.00</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Holdings Value</div>
+            <div class="value" id="statHoldings">$0.00</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Total Value</div>
+            <div class="value" id="statTotal">$0.00</div>
+            <div class="sub" id="statTotalChange">—</div>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <div class="panel-card">
+              <h5>Allocation</h5>
+              <div style="height:220px;"><canvas id="allocChart"></canvas></div>
+              <div class="empty-state" id="allocEmpty" style="display:none;">
+                <i class="fas fa-chart-pie"></i>
+                No holdings yet. Head to Markets to place your first trade.
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-7">
+            <div class="panel-card">
+              <h5>Your Holdings</h5>
+              <table class="dash-table">
+                <thead>
+                  <tr>
+                    <th>Symbol</th><th>Shares</th><th>Avg. Cost</th><th>Market Value</th><th>Gain / Loss</th>
+                  </tr>
+                </thead>
+                <tbody id="holdingsBody"></tbody>
+              </table>
+              <div class="empty-state" id="holdingsEmpty" style="display:none;">
+                <i class="fas fa-briefcase"></i> No holdings yet.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <h5>Recent Transactions</h5>
+          <table class="dash-table">
+            <thead>
+              <tr><th>Date</th><th>Symbol</th><th>Side</th><th>Shares</th><th>Price</th></tr>
+            </thead>
+            <tbody id="txBody"></tbody>
+          </table>
+          <div class="empty-state" id="txEmpty" style="display:none;">
+            <i class="fas fa-receipt"></i> No transactions yet.
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ MARKETS ============ -->
+      <div class="dview" id="view-markets">
+        <h1>Markets</h1>
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+          <input type="text" class="form-control market-search" id="marketSearch" placeholder="Search by symbol or name..." oninput="renderMarkets()">
+          <select class="form-select" id="marketSector" style="max-width:200px;" onchange="renderMarkets()">
+            <option value="">All sectors</option>
+          </select>
+        </div>
+        <div class="panel-card">
+          <table class="dash-table">
+            <thead>
+              <tr><th>Stock</th><th>Sector</th><th>Price</th><th>Change</th><th>Trend</th><th>Watch</th></tr>
+            </thead>
+            <tbody id="marketsBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ============ STOCK DETAIL ============ -->
+      <div class="dview" id="view-stock">
+        <button class="btn btn-sm btn-outline-secondary mb-3" onclick="showDash('markets')"><i class="fas fa-arrow-left"></i> Back to Markets</button>
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+          <div>
+            <h1 class="mb-0" id="stockTitle">—</h1>
+            <span class="sector-pill" id="stockSector">—</span>
+          </div>
+          <div class="text-end">
+            <div class="value" style="font-size:1.8rem;font-weight:700;" id="stockPrice">$0.00</div>
+            <div id="stockChange">—</div>
+          </div>
+        </div>
+
+        <div class="row g-4 mt-1">
+          <div class="col-lg-8">
+            <div class="panel-card">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="mb-0">Price Chart</h5>
+                <div class="d-flex gap-1">
+                  <button class="tf-btn active" data-tf="1D" onclick="setStockTimeframe('1D')">1D</button>
+                  <button class="tf-btn" data-tf="1W" onclick="setStockTimeframe('1W')">1W</button>
+                  <button class="tf-btn" data-tf="1M" onclick="setStockTimeframe('1M')">1M</button>
+                </div>
+              </div>
+              <div class="price-chart-wrap"><canvas id="stockChart"></canvas></div>
+            </div>
+
+            <div class="panel-card">
+              <h5>Key Stats</h5>
+              <div class="stat-grid">
+                <div><div class="k">Prev. Close</div><div class="v" id="ksPrevClose">—</div></div>
+                <div><div class="k">Day Range</div><div class="v" id="ksRange">—</div></div>
+                <div><div class="k">Sector</div><div class="v" id="ksSector">—</div></div>
+                <div><div class="k">Your Shares</div><div class="v" id="ksShares">0</div></div>
+              </div>
+            </div>
+
+            <div class="panel-card">
+              <h5>News</h5>
+              <div id="stockNews"></div>
+            </div>
+          </div>
+
+          <div class="col-lg-4">
+            <div class="panel-card">
+              <h5>Trade <span id="stockOrderSymbol"></span></h5>
+              <div class="auth-error" id="stockOrderError"></div>
+              <div class="auth-success" id="stockOrderSuccess"></div>
+              <form id="stockOrderForm" class="order-form">
+                <div class="mb-2 d-flex gap-3 mt-1">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="stockOrderSide" id="stockSideBuy" value="BUY" checked>
+                    <label class="form-check-label" for="stockSideBuy">Buy</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="stockOrderSide" id="stockSideSell" value="SELL">
+                    <label class="form-check-label" for="stockSideSell">Sell</label>
+                  </div>
+                </div>
+
+                <label for="stockOrderType">Order type</label>
+                <select class="form-select" id="stockOrderType" onchange="toggleLimitField()">
+                  <option value="MARKET">Market (execute now)</option>
+                  <option value="LIMIT">Limit (set target price)</option>
+                </select>
+
+                <label for="stockOrderQty">Shares</label>
+                <input type="number" class="form-control" id="stockOrderQty" min="1" step="1" placeholder="e.g. 10">
+
+                <div id="limitPriceField" style="display:none;">
+                  <label for="stockLimitPrice">Limit price</label>
+                  <input type="number" class="form-control" id="stockLimitPrice" min="0.01" step="0.01" placeholder="Target price">
+                </div>
+
+                <div class="p-2 mt-2 rounded" style="background:#f6f8fb;font-size:.85rem;" id="orderEstimate">Estimated cost: $0.00</div>
+
+                <button type="submit" class="btn btn-buy w-100">Place Order</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ WATCHLIST ============ -->
+      <div class="dview" id="view-watchlist">
+        <h1>Watchlist</h1>
+        <div class="panel-card">
+          <table class="dash-table">
+            <thead>
+              <tr><th>Stock</th><th>Price</th><th>Change</th><th>Trend</th><th></th></tr>
+            </thead>
+            <tbody id="watchlistBody"></tbody>
+          </table>
+          <div class="empty-state" id="watchlistEmpty" style="display:none;">
+            <i class="fas fa-star"></i> Your watchlist is empty. Star stocks from the Markets page to track them here.
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ ORDERS ============ -->
+      <div class="dview" id="view-orders">
+        <h1>Orders</h1>
+        <div class="panel-card">
+          <h5>Open Orders</h5>
+          <table class="dash-table">
+            <thead>
+              <tr><th>Date</th><th>Symbol</th><th>Side</th><th>Type</th><th>Shares</th><th>Limit Price</th><th>Status</th><th></th></tr>
+            </thead>
+            <tbody id="openOrdersBody"></tbody>
+          </table>
+          <div class="empty-state" id="openOrdersEmpty" style="display:none;">
+            <i class="fas fa-list-check"></i> No open orders.
+          </div>
+        </div>
+        <div class="panel-card">
+          <h5>Order History</h5>
+          <table class="dash-table">
+            <thead>
+              <tr><th>Date</th><th>Symbol</th><th>Side</th><th>Type</th><th>Shares</th><th>Price</th><th>Status</th></tr>
+            </thead>
+            <tbody id="orderHistoryBody"></tbody>
+          </table>
+          <div class="empty-state" id="orderHistoryEmpty" style="display:none;">
+            <i class="fas fa-clock-rotate-left"></i> No completed orders yet.
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ WALLET ============ -->
+      <div class="dview" id="view-wallet">
+        <h1>Wallet</h1>
+        <div class="stat-row" style="grid-template-columns:1fr;max-width:340px;">
+          <div class="stat-card">
+            <div class="label">Available Balance</div>
+            <div class="value" id="walletBalance">$0.00</div>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-lg-6">
+            <div class="panel-card">
+              <h5>Deposit Funds</h5>
+              <div class="auth-error" id="depositError"></div>
+              <div class="auth-success" id="depositSuccess"></div>
+              <form id="depositForm">
+                <label class="form-label mt-2">Funding method</label>
+                <div class="d-flex flex-column gap-2 mb-2" id="depositMethods">
+                  <label class="method-option selected"><input type="radio" name="depositMethod" value="Debit Card" checked style="display:none;"><i class="fas fa-credit-card"></i> Debit / Credit Card</label>
+                  <label class="method-option"><input type="radio" name="depositMethod" value="Bank Transfer" style="display:none;"><i class="fas fa-building-columns"></i> Bank Transfer</label>
+                  <label class="method-option"><input type="radio" name="depositMethod" value="USSD" style="display:none;"><i class="fas fa-mobile-screen"></i> USSD</label>
+                </div>
+                <label for="depositAmount">Amount (USD)</label>
+                <input type="number" class="form-control" id="depositAmount" min="1" step="0.01" placeholder="e.g. 500">
+                <button type="submit" class="btn btn-buy w-100 mt-3">Fund Wallet</button>
+              </form>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="panel-card">
+              <h5>Withdraw Funds</h5>
+              <div class="auth-error" id="withdrawError"></div>
+              <div class="auth-success" id="withdrawSuccess"></div>
+              <form id="withdrawForm">
+                <label for="withdrawAmount" class="mt-2">Amount (USD)</label>
+                <input type="number" class="form-control" id="withdrawAmount" min="1" step="0.01" placeholder="e.g. 200">
+                <div class="p-2 mt-2 rounded" style="background:#f6f8fb;font-size:.82rem;" id="withdrawBankNote">
+                  Withdraws to the bank account on your Profile.
+                </div>
+                <button type="submit" class="btn btn-buy w-100 mt-3" style="background:var(--mavic-dark);">Withdraw</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <h5>Funding History</h5>
+          <table class="dash-table">
+            <thead>
+              <tr><th>Date</th><th>Type</th><th>Method</th><th>Amount</th><th>Status</th></tr>
+            </thead>
+            <tbody id="walletHistoryBody"></tbody>
+          </table>
+          <div class="empty-state" id="walletHistoryEmpty" style="display:none;">
+            <i class="fas fa-wallet"></i> No wallet activity yet.
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ PROFILE ============ -->
+      <div class="dview" id="view-profile">
+        <h1>Profile &amp; Settings</h1>
+        <div class="row g-4">
+          <div class="col-lg-6">
+            <div class="panel-card">
+              <h5>Account Info</h5>
+              <div class="auth-success" id="profileInfoSuccess"></div>
+              <form id="profileInfoForm">
+                <label for="profileName">Full name</label>
+                <input type="text" class="form-control" id="profileName">
+                <label for="profileEmail" class="mt-2">Email address</label>
+                <input type="email" class="form-control" id="profileEmail" disabled>
+                <label for="profilePhone" class="mt-2">Phone number</label>
+                <input type="text" class="form-control" id="profilePhone" placeholder="e.g. +234 800 000 0000">
+                <div class="mt-2">
+                  <span class="kyc-badge" style="background:#e6f7f1;color:#0f7a63;"><i class="fas fa-circle-check"></i> KYC Verified (demo)</span>
+                </div>
+                <button type="submit" class="btn btn-buy mt-3">Save Changes</button>
+              </form>
+            </div>
+
+            <div class="panel-card">
+              <h5>Bank Account (for withdrawals)</h5>
+              <div class="auth-success" id="profileBankSuccess"></div>
+              <form id="profileBankForm">
+                <label for="bankName">Bank name</label>
+                <input type="text" class="form-control" id="bankName" placeholder="e.g. GTBank">
+                <label for="bankAccountNumber" class="mt-2">Account number</label>
+                <input type="text" class="form-control" id="bankAccountNumber" placeholder="10-digit account number">
+                <button type="submit" class="btn btn-buy mt-3">Save Bank Details</button>
+              </form>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="panel-card">
+              <h5>Change Password</h5>
+              <div class="auth-error" id="passwordError"></div>
+              <div class="auth-success" id="passwordSuccess"></div>
+              <form id="passwordForm">
+                <label for="currentPassword">Current password</label>
+                <input type="password" class="form-control" id="currentPassword">
+                <label for="newPassword" class="mt-2">New password</label>
+                <input type="password" class="form-control" id="newPassword" minlength="6">
+                <label for="confirmNewPassword" class="mt-2">Confirm new password</label>
+                <input type="password" class="form-control" id="confirmNewPassword" minlength="6">
+                <button type="submit" class="btn btn-buy mt-3">Update Password</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ============================================================ -->
+<!-- APP LOGIC (in-memory demo data, no backend)                   -->
+<!-- ============================================================ -->
+<script>
+  // ================================================================
+  // ---- simple in-memory "database" for this demo session ----
+  // ================================================================
+  const users = {};      // email -> account object
+  let currentUser = null;
+  let currentDashView = 'overview';
+  let currentStockSymbol = null;
+  let stockTimeframe = '1D';
+  const charts = {}; // canvas id -> Chart.js instance
+
+  const SECTORS = ['Technology', 'Consumer', 'Automotive', 'Healthcare', 'Finance', 'Energy'];
+
+  const MARKET = [
+    { symbol: 'AAPL',  name: 'Apple Inc.',            sector: 'Technology', price: 213.42 },
+    { symbol: 'MSFT',  name: 'Microsoft Corp.',       sector: 'Technology', price: 452.10 },
+    { symbol: 'GOOGL', name: 'Alphabet Inc.',         sector: 'Technology', price: 178.55 },
+    { symbol: 'AMZN',  name: 'Amazon.com Inc.',       sector: 'Consumer',   price: 201.90 },
+    { symbol: 'TSLA',  name: 'Tesla Inc.',            sector: 'Automotive', price: 258.30 },
+    { symbol: 'NVDA',  name: 'NVIDIA Corp.',          sector: 'Technology', price: 138.75 },
+    { symbol: 'JNJ',   name: 'Johnson & Johnson',     sector: 'Healthcare', price: 156.20 },
+    { symbol: 'JPM',   name: 'JPMorgan Chase & Co.',  sector: 'Finance',    price: 214.65 },
+    { symbol: 'XOM',   name: 'Exxon Mobil Corp.',     sector: 'Energy',     price: 112.40 },
+    { symbol: 'META',  name: 'Meta Platforms Inc.',   sector: 'Technology', price: 489.80 },
+  ];
+
+  // seed each stock with prevClose + a bit of price history for charting
+  MARKET.forEach(m => {
+    m.prevClose = m.price;
+    m.dayLow = m.price;
+    m.dayHigh = m.price;
+    m.history = [];
+    let p = m.price;
+    for (let i = 60; i >= 0; i--) {
+      p = p * (1 + (Math.random() - 0.5) * 0.01);
+      m.history.push(Number(p.toFixed(2)));
+    }
+    m.history[m.history.length - 1] = m.price;
+  });
+
+  function fmt(n) {
+    return '$' + Number(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  function pctChange(now, prev) {
+    if (!prev) return 0;
+    return ((now - prev) / prev) * 100;
+  }
+  function changeHTML(now, prev) {
+    const pct = pctChange(now, prev);
+    const cls = pct >= 0 ? 'gain-positive' : 'gain-negative';
+    const sign = pct >= 0 ? '+' : '';
+    return `<span class="${cls}">${sign}${pct.toFixed(2)}%</span>`;
+  }
+
+  // ================================================================
+  // ---- top-level page navigation ----
+  // ================================================================
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    if (name === 'app') showDash(currentDashView || 'overview');
+    window.scrollTo(0, 0);
+  }
+
+  // ---- dashboard sub-view navigation ----
+  function showDash(view, params) {
+    if (!currentUser || !users[currentUser]) { showPage('login'); return; }
+    currentDashView = view;
+    document.querySelectorAll('.dview').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + view).classList.add('active');
+    document.querySelectorAll('.dash-nav-link[data-view]').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-view') === view);
+    });
+    renderChrome();
+
+    if (view === 'overview') renderOverview();
+    if (view === 'markets') renderMarkets();
+    if (view === 'watchlist') renderWatchlist();
+    if (view === 'orders') renderOrders();
+    if (view === 'wallet') renderWallet();
+    if (view === 'profile') renderProfile();
+    if (view === 'stock') renderStock(params && params.symbol ? params.symbol : currentStockSymbol);
+    window.scrollTo(0, 0);
+  }
+
+  function openStock(symbol) {
+    currentStockSymbol = symbol;
+    showDash('stock', { symbol });
+  }
+
+  // ================================================================
+  // ---- register / login / logout ----
+  // ================================================================
+  document.getElementById('registerForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const name = document.getElementById('registerName').value.trim();
+    const email = document.getElementById('registerEmail').value.trim().toLowerCase();
+    const pw = document.getElementById('registerPassword').value;
+    const confirm = document.getElementById('registerConfirm').value;
+    const errorEl = document.getElementById('registerError');
+    errorEl.textContent = '';
+
+    if (!name || !email || !pw) { errorEl.textContent = 'Please fill in all fields.'; return; }
+    if (pw.length < 6) { errorEl.textContent = 'Password must be at least 6 characters.'; return; }
+    if (pw !== confirm) { errorEl.textContent = 'Passwords do not match.'; return; }
+    if (users[email]) { errorEl.textContent = 'An account with this email already exists.'; return; }
+
+    users[email] = {
+      name, email, password: pw, phone: '',
+      cash: 10000,
+      holdings: {},        // symbol -> { shares, avgCost }
+      watchlist: [],        // [symbol]
+      orders: [],            // { id, date, symbol, side, type, qty, limitPrice, status, filledPrice }
+      transactions: [],       // { date, symbol, side, shares, price }
+      walletHistory: [],       // { date, type, method, amount, status }
+      bankName: '', bankAccountNumber: '',
+      notifications: []
+    };
+
+    currentUser = email;
+    document.getElementById('registerForm').reset();
+    showPage('app');
+    pushNotification('Welcome to MAVIC! Your account was created with $10,000 in demo cash.');
+  });
+
+  document.getElementById('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const pw = document.getElementById('loginPassword').value;
+    const errorEl = document.getElementById('loginError');
+    errorEl.textContent = '';
+
+    const acct = users[email];
+    if (!acct || acct.password !== pw) {
+      errorEl.textContent = 'Invalid email or password.';
+      return;
+    }
+
+    currentUser = email;
+    document.getElementById('loginForm').reset();
+    showPage('app');
+  });
+
+  function logout() {
+    currentUser = null;
+    showPage('home');
+  }
+
+  function acct() { return users[currentUser]; }
+
+  // ================================================================
+  // ---- shared chrome: sidebar user chip + notifications ----
+  // ================================================================
+  function renderChrome() {
+    const a = acct();
+    if (!a) return;
+    document.getElementById('userChip').textContent = a.name;
+    document.getElementById('balanceChip').textContent = fmt(a.cash);
+    renderNotifications();
+  }
+
+  function pushNotification(text) {
+    const a = acct();
+    if (!a) return;
+    a.notifications.unshift({ text, date: new Date().toLocaleString() });
+    a.notifications = a.notifications.slice(0, 20);
+    renderNotifications();
+  }
+
+  function renderNotifications() {
+    const a = acct();
+    if (!a) return;
+    const list = document.getElementById('notifList');
+    document.getElementById('bellDot').style.display = a.notifications.length ? 'block' : 'none';
+    if (!a.notifications.length) {
+      list.innerHTML = '<div class="notif-item text-center">No notifications yet.</div>';
+      return;
+    }
+    list.innerHTML = a.notifications.map(n => `
+      <div class="notif-item">
+        ${n.text}<br><small>${n.date}</small>
+      </div>
+    `).join('');
+  }
+
+  function toggleNotifPanel() {
+    document.getElementById('notifPanel').classList.toggle('show');
+  }
+  document.addEventListener('click', function (e) {
+    const panel = document.getElementById('notifPanel');
+    if (!panel) return;
+    if (!panel.contains(e.target) && !e.target.closest('.bell-btn')) panel.classList.remove('show');
+  });
+
+  // ================================================================
+  // ---- OVERVIEW ----
+  // ================================================================
+  function renderOverview() {
+    const a = acct();
+    document.getElementById('statCash').textContent = fmt(a.cash);
+
+    let holdingsValue = 0;
+    let costBasisTotal = 0;
+    const holdingsBody = document.getElementById('holdingsBody');
+    holdingsBody.innerHTML = '';
+    const allocLabels = [], allocValues = [];
+
+    const symbols = Object.keys(a.holdings).filter(s => a.holdings[s].shares > 0);
+    document.getElementById('holdingsEmpty').style.display = symbols.length ? 'none' : 'block';
+
+    symbols.forEach(symbol => {
+      const h = a.holdings[symbol];
+      const market = MARKET.find(m => m.symbol === symbol);
+      const price = market ? market.price : h.avgCost;
+      const marketValue = price * h.shares;
+      const gain = marketValue - (h.avgCost * h.shares);
+      holdingsValue += marketValue;
+      costBasisTotal += h.avgCost * h.shares;
+      allocLabels.push(symbol);
+      allocValues.push(Number(marketValue.toFixed(2)));
+
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td class="symbol-badge">${symbol}</td>
+        <td>${h.shares}</td>
+        <td>${fmt(h.avgCost)}</td>
+        <td>${fmt(marketValue)}</td>
+        <td class="${gain >= 0 ? 'gain-positive' : 'gain-negative'}">${gain >= 0 ? '+' : ''}${fmt(gain)}</td>
+      `;
+      holdingsBody.appendChild(row);
+    });
+
+    document.getElementById('statHoldings').textContent = fmt(holdingsValue);
+    document.getElementById('statTotal').textContent = fmt(a.cash + holdingsValue);
+    const totalGain = holdingsValue - costBasisTotal;
+    const totalGainEl = document.getElementById('statTotalChange');
+    if (symbols.length) {
+      totalGainEl.className = 'sub ' + (totalGain >= 0 ? 'gain-positive' : 'gain-negative');
+      totalGainEl.textContent = (totalGain >= 0 ? '+' : '') + fmt(totalGain) + ' overall';
+    } else {
+      totalGainEl.className = 'sub';
+      totalGainEl.textContent = '—';
+    }
+
+    // allocation chart
+    document.getElementById('allocEmpty').style.display = symbols.length ? 'none' : 'block';
+    const palette = ['#17c3a2', '#3a8ee5', '#e5a13c', '#e5484d', '#8e6ce5', '#2fb8d9', '#d97757', '#5aa469'];
+    renderChart('allocChart', 'doughnut', {
+      labels: allocLabels,
+      datasets: [{ data: allocValues, backgroundColor: palette }]
+    }, { plugins: { legend: { position: 'bottom' } } });
+
+    // recent transactions
+    const txBody = document.getElementById('txBody');
+    txBody.innerHTML = '';
+    document.getElementById('txEmpty').style.display = a.transactions.length ? 'none' : 'block';
+    a.transactions.slice().reverse().slice(0, 8).forEach(tx => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${tx.date}</td>
+        <td>${tx.symbol}</td>
+        <td>${tx.side}</td>
+        <td>${tx.shares}</td>
+        <td>${fmt(tx.price)}</td>
+      `;
+      txBody.appendChild(row);
+    });
+  }
+
+  function renderChart(canvasId, type, data, extraOptions) {
+    const ctx = document.getElementById(canvasId);
+    if (!ctx) return;
+    if (charts[canvasId]) charts[canvasId].destroy();
+    charts[canvasId] = new Chart(ctx, {
+      type,
+      data,
+      options: Object.assign({
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: type === 'line' ? { x: { display: false }, y: { display: true } } : undefined,
+        elements: { point: { radius: 0 } }
+      }, extraOptions || {})
+    });
+  }
+
+  // ================================================================
+  // ---- MARKETS ----
+  // ================================================================
+  function initSectorFilter() {
+    const sel = document.getElementById('marketSector');
+    SECTORS.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s; opt.textContent = s;
+      sel.appendChild(opt);
+    });
+  }
+
+  function renderMarkets() {
+    const search = (document.getElementById('marketSearch').value || '').trim().toLowerCase();
+    const sector = document.getElementById('marketSector').value;
+    const a = acct();
+    const body = document.getElementById('marketsBody');
+    body.innerHTML = '';
+
+    MARKET.filter(m => {
+      const matchesSearch = !search || m.symbol.toLowerCase().includes(search) || m.name.toLowerCase().includes(search);
+      const matchesSector = !sector || m.sector === sector;
+      return matchesSearch && matchesSector;
+    }).forEach(m => {
+      const isWatched = a.watchlist.includes(m.symbol);
+      const row = document.createElement('tr');
+      row.className = 'stock-row';
+      row.innerHTML = `
+        <td onclick="openStock('${m.symbol}')"><span class="symbol-badge">${m.symbol}</span><br><small class="text-muted">${m.name}</small></td>
+        <td onclick="openStock('${m.symbol}')"><span class="sector-pill">${m.sector}</span></td>
+        <td onclick="openStock('${m.symbol}')">${fmt(m.price)}</td>
+        <td onclick="openStock('${m.symbol}')">${changeHTML(m.price, m.prevClose)}</td>
+        <td class="sparkline-cell"><canvas id="spark-${m.symbol}"></canvas></td>
+        <td><button class="star-btn ${isWatched ? 'active' : ''}" onclick="toggleWatchlist('${m.symbol}'); event.stopPropagation();"><i class="fas fa-star"></i></button></td>
+      `;
+      body.appendChild(row);
+    });
+
+    // sparklines (small line charts, no axes)
+    MARKET.forEach(m => {
+      const canvas = document.getElementById('spark-' + m.symbol);
+      if (!canvas) return;
+      const up = m.price >= m.prevClose;
+      renderChart('spark-' + m.symbol, 'line', {
+        labels: m.history.map((_, i) => i),
+        datasets: [{ data: m.history.slice(-20), borderColor: up ? '#1a9e6c' : '#e5484d', borderWidth: 1.5, fill: false, tension: .3 }]
+      }, { scales: { x: { display: false }, y: { display: false } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } });
+    });
+  }
+
+  // ================================================================
+  // ---- STOCK DETAIL ----
+  // ================================================================
+  function renderStock(symbol) {
+    if (!symbol) { showDash('markets'); return; }
+    const m = MARKET.find(s => s.symbol === symbol);
+    if (!m) { showDash('markets'); return; }
+    currentStockSymbol = symbol;
+    const a = acct();
+
+    document.getElementById('stockTitle').textContent = `${m.symbol} — ${m.name}`;
+    document.getElementById('stockSector').textContent = m.sector;
+    document.getElementById('stockPrice').textContent = fmt(m.price);
+    document.getElementById('stockChange').innerHTML = changeHTML(m.price, m.prevClose) + ' today';
+    document.getElementById('ksPrevClose').textContent = fmt(m.prevClose);
+    document.getElementById('ksRange').textContent = fmt(m.dayLow) + ' – ' + fmt(m.dayHigh);
+    document.getElementById('ksSector').textContent = m.sector;
+    document.getElementById('ksShares').textContent = (a.holdings[symbol] ? a.holdings[symbol].shares : 0);
+    document.getElementById('stockOrderSymbol').textContent = m.symbol;
+
+    let points = m.history;
+    if (stockTimeframe === '1D') points = m.history.slice(-20);
+    if (stockTimeframe === '1W') points = m.history.slice(-40);
+    if (stockTimeframe === '1M') points = m.history;
+    const up = m.price >= m.prevClose;
+    renderChart('stockChart', 'line', {
+      labels: points.map((_, i) => i),
+      datasets: [{ data: points, borderColor: up ? '#1a9e6c' : '#e5484d', backgroundColor: up ? 'rgba(26,158,108,.08)' : 'rgba(229,72,77,.08)', fill: true, borderWidth: 2, tension: .3 }]
+    }, { scales: { x: { display: false }, y: { display: true, grid: { color: '#f0f2f6' } } } });
+
+    document.getElementById('stockNews').innerHTML = [
+      `${m.name} shares are ${up ? 'trending up' : 'trending down'} in today's session amid broad ${m.sector.toLowerCase()} sector activity.`,
+      `Analysts continue to track ${m.symbol} ahead of the next scheduled earnings window.`,
+      `Trading volume for ${m.symbol} remains within its recent average range.`
+    ].map(t => `<p class="mb-2" style="font-size:.9rem;color:#56607a;"><i class="fas fa-newspaper text-muted"></i> ${t}</p>`).join('');
+
+    document.getElementById('stockOrderForm').reset();
+    document.getElementById('stockOrderError').textContent = '';
+    document.getElementById('stockOrderSuccess').textContent = '';
+    toggleLimitField();
+    updateOrderEstimate();
+  }
+
+  function setStockTimeframe(tf) {
+    stockTimeframe = tf;
+    document.querySelectorAll('.tf-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-tf') === tf));
+    renderStock(currentStockSymbol);
+  }
+
+  function toggleLimitField() {
+    const type = document.getElementById('stockOrderType').value;
+    document.getElementById('limitPriceField').style.display = type === 'LIMIT' ? 'block' : 'none';
+    updateOrderEstimate();
+  }
+
+  function updateOrderEstimate() {
+    const m = MARKET.find(s => s.symbol === currentStockSymbol);
+    if (!m) return;
+    const qty = parseInt(document.getElementById('stockOrderQty').value, 10) || 0;
+    const type = document.getElementById('stockOrderType').value;
+    const limitPrice = parseFloat(document.getElementById('stockLimitPrice').value);
+    const price = type === 'LIMIT' && limitPrice ? limitPrice : m.price;
+    document.getElementById('orderEstimate').textContent = 'Estimated ' + (type === 'LIMIT' ? 'value' : 'cost') + ': ' + fmt(price * qty);
+  }
+  document.addEventListener('input', function (e) {
+    if (e.target && (e.target.id === 'stockOrderQty' || e.target.id === 'stockLimitPrice')) updateOrderEstimate();
+  });
+
+  document.getElementById('stockOrderForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const a = acct();
+    const errorEl = document.getElementById('stockOrderError');
+    const successEl = document.getElementById('stockOrderSuccess');
+    errorEl.textContent = ''; successEl.textContent = '';
+
+    const symbol = currentStockSymbol;
+    const m = MARKET.find(s => s.symbol === symbol);
+    const qty = parseInt(document.getElementById('stockOrderQty').value, 10);
+    const side = document.querySelector('input[name="stockOrderSide"]:checked').value;
+    const type = document.getElementById('stockOrderType').value;
+    const limitPrice = parseFloat(document.getElementById('stockLimitPrice').value);
+
+    if (!qty || qty <= 0) { errorEl.textContent = 'Enter a valid number of shares.'; return; }
+    if (type === 'LIMIT' && (!limitPrice || limitPrice <= 0)) { errorEl.textContent = 'Enter a valid limit price.'; return; }
+    if (side === 'SELL') {
+      const h = a.holdings[symbol];
+      if (!h || h.shares < qty) { errorEl.textContent = 'You do not own enough shares to sell.'; return; }
+    }
+    if (side === 'BUY' && type === 'MARKET' && m.price * qty > a.cash) {
+      errorEl.textContent = 'Insufficient cash balance for this order.'; return;
+    }
+
+    const order = {
+      id: 'ord_' + Date.now() + Math.floor(Math.random() * 1000),
+      date: new Date().toLocaleString(),
+      symbol, side, type, qty, limitPrice: type === 'LIMIT' ? limitPrice : null,
+      status: 'OPEN', filledPrice: null
+    };
+    a.orders.push(order);
+
+    if (type === 'MARKET') {
+      fillOrder(order);
+      successEl.textContent = `Order filled: ${side} ${qty} ${symbol} at ${fmt(m.price)}.`;
+    } else {
+      successEl.textContent = `Limit order placed. It will fill automatically when ${symbol} reaches ${fmt(limitPrice)}.`;
+      pushNotification(`Limit order placed: ${side} ${qty} ${symbol} @ ${fmt(limitPrice)}.`);
+    }
+
+    document.getElementById('stockOrderForm').reset();
+    toggleLimitField();
+    renderStock(symbol);
+  });
+
+  function fillOrder(order) {
+    const a = users[Object.keys(users).find(email => users[email].orders.includes(order))] || acct();
+    const m = MARKET.find(s => s.symbol === order.symbol);
+    const price = m.price;
+    const cost = price * order.qty;
+
+    if (order.side === 'BUY') {
+      a.cash -= cost;
+      const h = a.holdings[order.symbol] || { shares: 0, avgCost: 0 };
+      const totalCost = h.avgCost * h.shares + cost;
+      h.shares += order.qty;
+      h.avgCost = totalCost / h.shares;
+      a.holdings[order.symbol] = h;
+    } else {
+      const h = a.holdings[order.symbol];
+      h.shares -= order.qty;
+      a.cash += cost;
+    }
+
+    order.status = 'FILLED';
+    order.filledPrice = price;
+    a.transactions.push({ date: new Date().toLocaleDateString(), symbol: order.symbol, side: order.side, shares: order.qty, price });
+    pushNotification(`Order filled: ${order.side} ${order.qty} ${order.symbol} at ${fmt(price)}.`);
+  }
+
+  function cancelOrder(orderId) {
+    const a = acct();
+    const order = a.orders.find(o => o.id === orderId);
+    if (!order || order.status !== 'OPEN') return;
+    order.status = 'CANCELLED';
+    pushNotification(`Order cancelled: ${order.side} ${order.qty} ${order.symbol}.`);
+    renderOrders();
+  }
+
+  // check open limit orders against current market prices; fill any that qualify
+  function checkLimitOrders() {
+    Object.keys(users).forEach(email => {
+      const a = users[email];
+      a.orders.filter(o => o.status === 'OPEN' && o.type === 'LIMIT').forEach(o => {
+        const m = MARKET.find(s => s.symbol === o.symbol);
+        if (!m) return;
+        const shouldFillBuy = o.side === 'BUY' && m.price <= o.limitPrice;
+        const shouldFillSell = o.side === 'SELL' && m.price >= o.limitPrice;
+        if (shouldFillBuy || shouldFillSell) {
+          if (o.side === 'BUY' && m.price * o.qty > a.cash) return; // still insufficient funds, leave open
+          if (o.side === 'SELL' && (!a.holdings[o.symbol] || a.holdings[o.symbol].shares < o.qty)) return;
+          const tmpCurrent = currentUser;
+          currentUser = email;
+          fillOrder(o);
+          currentUser = tmpCurrent;
+        }
+      });
+    });
+  }
+
+  // ================================================================
+  // ---- WATCHLIST ----
+  // ================================================================
+  function toggleWatchlist(symbol) {
+    const a = acct();
+    const idx = a.watchlist.indexOf(symbol);
+    if (idx >= 0) { a.watchlist.splice(idx, 1); }
+    else { a.watchlist.push(symbol); }
+    if (currentDashView === 'markets') renderMarkets();
+    if (currentDashView === 'watchlist') renderWatchlist();
+  }
+
+  function renderWatchlist() {
+    const a = acct();
+    const body = document.getElementById('watchlistBody');
+    body.innerHTML = '';
+    document.getElementById('watchlistEmpty').style.display = a.watchlist.length ? 'none' : 'block';
+
+    a.watchlist.forEach(symbol => {
+      const m = MARKET.find(s => s.symbol === symbol);
+      if (!m) return;
+      const row = document.createElement('tr');
+      row.className = 'stock-row';
+      row.innerHTML = `
+        <td onclick="openStock('${m.symbol}')"><span class="symbol-badge">${m.symbol}</span><br><small class="text-muted">${m.name}</small></td>
+        <td onclick="openStock('${m.symbol}')">${fmt(m.price)}</td>
+        <td onclick="openStock('${m.symbol}')">${changeHTML(m.price, m.prevClose)}</td>
+        <td class="sparkline-cell"><canvas id="wspark-${m.symbol}"></canvas></td>
+        <td><button class="star-btn active" onclick="toggleWatchlist('${m.symbol}'); event.stopPropagation();"><i class="fas fa-star"></i></button></td>
+      `;
+      body.appendChild(row);
+    });
+    a.watchlist.forEach(symbol => {
+      const m = MARKET.find(s => s.symbol === symbol);
+      const canvas = document.getElementById('wspark-' + symbol);
+      if (!m || !canvas) return;
+      const up = m.price >= m.prevClose;
+      renderChart('wspark-' + symbol, 'line', {
+        labels: m.history.map((_, i) => i),
+        datasets: [{ data: m.history.slice(-20), borderColor: up ? '#1a9e6c' : '#e5484d', borderWidth: 1.5, fill: false, tension: .3 }]
+      }, { scales: { x: { display: false }, y: { display: false } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } });
+    });
+  }
+
+  // ================================================================
+  // ---- ORDERS ----
+  // ================================================================
+  function renderOrders() {
+    const a = acct();
+    const openBody = document.getElementById('openOrdersBody');
+    const histBody = document.getElementById('orderHistoryBody');
+    openBody.innerHTML = ''; histBody.innerHTML = '';
+
+    const open = a.orders.filter(o => o.status === 'OPEN').slice().reverse();
+    const history = a.orders.filter(o => o.status !== 'OPEN').slice().reverse();
+
+    document.getElementById('openOrdersEmpty').style.display = open.length ? 'none' : 'block';
+    document.getElementById('orderHistoryEmpty').style.display = history.length ? 'none' : 'block';
+
+    open.forEach(o => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${o.date}</td><td>${o.symbol}</td><td>${o.side}</td><td>${o.type}</td><td>${o.qty}</td>
+        <td>${o.limitPrice ? fmt(o.limitPrice) : '—'}</td>
+        <td><span class="status-pill status-open">OPEN</span></td>
+        <td><button class="btn btn-sm btn-sell-outline" onclick="cancelOrder('${o.id}')">Cancel</button></td>
+      `;
+      openBody.appendChild(row);
+    });
+
+    history.forEach(o => {
+      const pillClass = o.status === 'FILLED' ? 'status-filled' : 'status-cancelled';
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${o.date}</td><td>${o.symbol}</td><td>${o.side}</td><td>${o.type}</td><td>${o.qty}</td>
+        <td>${o.filledPrice ? fmt(o.filledPrice) : '—'}</td>
+        <td><span class="status-pill ${pillClass}">${o.status}</span></td>
+      `;
+      histBody.appendChild(row);
+    });
+  }
+
+  // ================================================================
+  // ---- WALLET ----
+  // ================================================================
+  document.getElementById('depositMethods').addEventListener('click', function (e) {
+    const opt = e.target.closest('.method-option');
+    if (!opt) return;
+    document.querySelectorAll('#depositMethods .method-option').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+    opt.querySelector('input').checked = true;
+  });
+
+  document.getElementById('depositForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const a = acct();
+    const errorEl = document.getElementById('depositError');
+    const successEl = document.getElementById('depositSuccess');
+    errorEl.textContent = ''; successEl.textContent = '';
+
+    const amount = parseFloat(document.getElementById('depositAmount').value);
+    const method = document.querySelector('input[name="depositMethod"]:checked').value;
+    if (!amount || amount <= 0) { errorEl.textContent = 'Enter a valid amount.'; return; }
+
+    a.cash += amount;
+    a.walletHistory.push({ date: new Date().toLocaleString(), type: 'DEPOSIT', method, amount, status: 'SUCCESS' });
+    successEl.textContent = `Wallet funded with ${fmt(amount)} via ${method}.`;
+    pushNotification(`Deposit successful: ${fmt(amount)} via ${method}.`);
+    document.getElementById('depositForm').reset();
+    document.querySelectorAll('#depositMethods .method-option').forEach((o, i) => o.classList.toggle('selected', i === 0));
+    renderWallet();
+  });
+
+  document.getElementById('withdrawForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const a = acct();
+    const errorEl = document.getElementById('withdrawError');
+    const successEl = document.getElementById('withdrawSuccess');
+    errorEl.textContent = ''; successEl.textContent = '';
+
+    const amount = parseFloat(document.getElementById('withdrawAmount').value);
+    if (!amount || amount <= 0) { errorEl.textContent = 'Enter a valid amount.'; return; }
+    if (amount > a.cash) { errorEl.textContent = 'Insufficient balance.'; return; }
+    if (!a.bankAccountNumber) { errorEl.textContent = 'Add a bank account on your Profile before withdrawing.'; return; }
+
+    a.cash -= amount;
+    a.walletHistory.push({ date: new Date().toLocaleString(), type: 'WITHDRAWAL', method: a.bankName || 'Bank Transfer', amount, status: 'SUCCESS' });
+    successEl.textContent = `${fmt(amount)} withdrawal to ${a.bankName} initiated.`;
+    pushNotification(`Withdrawal successful: ${fmt(amount)} to ${a.bankName}.`);
+    document.getElementById('withdrawForm').reset();
+    renderWallet();
+  });
+
+  function renderWallet() {
+    const a = acct();
+    document.getElementById('walletBalance').textContent = fmt(a.cash);
+    document.getElementById('withdrawBankNote').textContent = a.bankAccountNumber
+      ? `Withdraws to ${a.bankName} ••••${a.bankAccountNumber.slice(-4)}.`
+      : 'Add a bank account on your Profile before withdrawing.';
+
+    const body = document.getElementById('walletHistoryBody');
+    body.innerHTML = '';
+    document.getElementById('walletHistoryEmpty').style.display = a.walletHistory.length ? 'none' : 'block';
+    a.walletHistory.slice().reverse().forEach(w => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${w.date}</td><td>${w.type}</td><td>${w.method}</td><td>${fmt(w.amount)}</td>
+        <td><span class="status-pill status-success">${w.status}</span></td>
+      `;
+      body.appendChild(row);
+    });
+  }
+
+  // ================================================================
+  // ---- PROFILE ----
+  // ================================================================
+  function renderProfile() {
+    const a = acct();
+    document.getElementById('profileName').value = a.name;
+    document.getElementById('profileEmail').value = a.email;
+    document.getElementById('profilePhone').value = a.phone || '';
+    document.getElementById('bankName').value = a.bankName || '';
+    document.getElementById('bankAccountNumber').value = a.bankAccountNumber || '';
+    document.getElementById('profileInfoSuccess').textContent = '';
+    document.getElementById('profileBankSuccess').textContent = '';
+    document.getElementById('passwordError').textContent = '';
+    document.getElementById('passwordSuccess').textContent = '';
+  }
+
+  document.getElementById('profileInfoForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const a = acct();
+    a.name = document.getElementById('profileName').value.trim() || a.name;
+    a.phone = document.getElementById('profilePhone').value.trim();
+    document.getElementById('profileInfoSuccess').textContent = 'Account info updated.';
+    renderChrome();
+  });
+
+  document.getElementById('profileBankForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const a = acct();
+    a.bankName = document.getElementById('bankName').value.trim();
+    a.bankAccountNumber = document.getElementById('bankAccountNumber').value.trim();
+    document.getElementById('profileBankSuccess').textContent = 'Bank details saved.';
+  });
+
+  document.getElementById('passwordForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const a = acct();
+    const errorEl = document.getElementById('passwordError');
+    const successEl = document.getElementById('passwordSuccess');
+    errorEl.textContent = ''; successEl.textContent = '';
+
+    const current = document.getElementById('currentPassword').value;
+    const next = document.getElementById('newPassword').value;
+    const confirm = document.getElementById('confirmNewPassword').value;
+
+    if (current !== a.password) { errorEl.textContent = 'Current password is incorrect.'; return; }
+    if (next.length < 6) { errorEl.textContent = 'New password must be at least 6 characters.'; return; }
+    if (next !== confirm) { errorEl.textContent = 'New passwords do not match.'; return; }
+
+    a.password = next;
+    successEl.textContent = 'Password updated successfully.';
+    document.getElementById('passwordForm').reset();
+  });
+
+  // ================================================================
+  // ---- market price simulation (runs continuously) ----
+  // ================================================================
+  function tickMarket() {
+    MARKET.forEach(m => {
+      m.prevClose = m.history.length ? m.history[Math.max(0, m.history.length - 20)] : m.price;
+      const drift = (Math.random() - 0.5) * 0.006; // +/-0.3% per tick
+      m.price = Math.max(0.5, Number((m.price * (1 + drift)).toFixed(2)));
+      m.dayLow = Math.min(m.dayLow, m.price);
+      m.dayHigh = Math.max(m.dayHigh, m.price);
+      m.history.push(m.price);
+      if (m.history.length > 80) m.history.shift();
+    });
+    checkLimitOrders();
+
+    // refresh whatever the user is currently looking at
+    if (currentUser) {
+      if (currentDashView === 'overview') renderOverview();
+      if (currentDashView === 'markets') renderMarkets();
+      if (currentDashView === 'watchlist') renderWatchlist();
+      if (currentDashView === 'stock') renderStock(currentStockSymbol);
+      if (currentDashView === 'orders') renderOrders();
+      document.getElementById('balanceChip').textContent = fmt(acct().cash);
+    }
+  }
+  setInterval(tickMarket, 4000);
+
+  // ---- init ----
+  initSectorFilter();
+</script>
+</body>
+</html>
